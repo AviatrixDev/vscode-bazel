@@ -166,10 +166,17 @@ export function getDefaultBuildifierExecutablePath(): string {
   // Try to retrieve the executable from VS Code's settings. If it's not set,
   // just use "buildifier" as the default and get it from the system PATH.
   const bazelConfig = vscode.workspace.getConfiguration("bazel");
-  const buildifierExecutable = bazelConfig.get<string>("buildifierExecutable");
+  let buildifierExecutable = bazelConfig.get<string>("buildifierExecutable");
   if (buildifierExecutable.length === 0) {
     return "buildifier";
   }
+
+  if (vscode.workspace.workspaceFolders !== undefined) {
+      const wspath = vscode.workspace.workspaceFolders[0].uri.path;
+      buildifierExecutable = buildifierExecutable.replace(
+        "${workspaceFolder}", wspath);
+  }
+
   return buildifierExecutable;
 }
 
