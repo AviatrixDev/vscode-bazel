@@ -1,8 +1,20 @@
+---
+# Github action for publishing avxctl release.
+# To test locally via `act`:
+#
+# act -j release-job -e <(echo '{ "ref": "refs/tags/vscode-bazel-v99.99.99" }' )
+#
 name: release
 on:
   push:
     tags:
       - "vscode-bazel-**"
+
+  # This is only for local testing
+  workflow_dispatch:
+    inputs:
+      branch:
+        type: "string"
 
 jobs:
   release-job:
