@@ -1,0 +1,22 @@
+name: release
+on:
+  push:
+    tags:
+      - "vscode-bazel-**"
+
+jobs:
+  release-job:
+    name: "bazel-vscode-release"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+      - run: npm install -g @vscode/vsce
+      - run: npm ci
+      - run: vsce package
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: vscode-bazel-*.vsix
