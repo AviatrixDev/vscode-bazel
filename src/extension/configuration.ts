@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import * as vscode from "vscode";
+import { resolvePath } from "../common/util";
 
 /**
  * Gets the path to the Bazel executable specified by the workspace
@@ -30,5 +31,5 @@ export function getDefaultBazelExecutablePath(): string {
   if (bazelExecutable.length === 0) {
     return "bazel";
   }
-  return bazelExecutable;
+  return resolvePath(bazelExecutable);
 }

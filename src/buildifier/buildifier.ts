@@ -15,6 +15,7 @@
 import * as child_process from "child_process";
 import * as path from "path";
 import * as vscode from "vscode";
+import { resolvePath } from "../common/util";
 import { IBuildifierResult, IBuildifierWarning } from "./buildifier_result";
 
 /** Whether to warn about lint findings or fix them. */
@@ -170,7 +171,8 @@ export function getDefaultBuildifierExecutablePath(): string {
   if (buildifierExecutable.length === 0) {
     return "buildifier";
   }
-  return buildifierExecutable;
+
+  return resolvePath(buildifierExecutable);
 }
 
 /**
