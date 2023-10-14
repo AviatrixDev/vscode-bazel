@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import * as vscode from "vscode";
+import { resolvePath } from "../common/util";
 
 /**
  * Gets the path to the Bazel executable specified by the workspace
@@ -26,14 +27,9 @@ export function getDefaultBazelExecutablePath(): string {
   // Try to retrieve the executable from VS Code's settings. If it's not set,
   // just use "bazel" as the default and get it from the system PATH.
   const bazelConfig = vscode.workspace.getConfiguration("bazel");
-  let bazelExecutable = bazelConfig.get<string>("executable");
+  const bazelExecutable = bazelConfig.get<string>("executable");
   if (bazelExecutable.length === 0) {
     return "bazel";
   }
-  if (vscode.workspace.workspaceFolders !== undefined) {
-      const wspath = vscode.workspace.workspaceFolders[0].uri.path;
-      bazelExecutable = bazelExecutable.replace(
-        "${workspaceFolder}", wspath);
-  }
-  return bazelExecutable;
+  return resolvePath(bazelExecutable);
 }

@@ -15,6 +15,7 @@
 import * as child_process from "child_process";
 import * as path from "path";
 import * as vscode from "vscode";
+import { resolvePath } from "../common/util";
 import { IBuildifierResult, IBuildifierWarning } from "./buildifier_result";
 
 /** Whether to warn about lint findings or fix them. */
@@ -166,18 +167,12 @@ export function getDefaultBuildifierExecutablePath(): string {
   // Try to retrieve the executable from VS Code's settings. If it's not set,
   // just use "buildifier" as the default and get it from the system PATH.
   const bazelConfig = vscode.workspace.getConfiguration("bazel");
-  let buildifierExecutable = bazelConfig.get<string>("buildifierExecutable");
+  const buildifierExecutable = bazelConfig.get<string>("buildifierExecutable");
   if (buildifierExecutable.length === 0) {
     return "buildifier";
   }
 
-  if (vscode.workspace.workspaceFolders !== undefined) {
-      const wspath = vscode.workspace.workspaceFolders[0].uri.path;
-      buildifierExecutable = buildifierExecutable.replace(
-        "${workspaceFolder}", wspath);
-  }
-
-  return buildifierExecutable;
+  return resolvePath(buildifierExecutable);
 }
 
 /**
