@@ -1,0 +1,34 @@
+---
+# Github action for publishing releases.
+# To test locally via `act`:
+#
+# act -j release-job -e <(echo '{ "ref": "refs/tags/vscode-bazel-v99.99.99" }' )
+#
+name: release
+on:
+  push:
+    tags:
+      - "vscode-bazel-**"
+
+  # This is only for local testing
+  workflow_dispatch:
+    inputs:
+      branch:
+        type: "string"
+
+jobs:
+  release-job:
+    name: "bazel-vscode-release"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+      - run: npm install -g @vscode/vsce
+      - run: npm ci
+      - run: vsce package
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: vscode-bazel-*.vsix

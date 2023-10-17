@@ -1,0 +1,40 @@
+name: Actionlint Check
+
+on:
+  pull_request:
+    paths:
+      - '.github/**'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install actionlint executable
+      id: get_actionlint
+      run: |
+        bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
+
+    - name: Run actionlint
+      run: |
+        OUTPUT=$(${{ steps.get_actionlint.outputs.executable }} \
+          -ignore 'label ".+" is unknown' \
+          -ignore 'workflow command ".+" was deprecated' \
+          -shellcheck=) || true
+        if [ -n "$OUTPUT" ]; then
+          # Output result here
+          echo "$OUTPUT"
+          # Save the log
+          echo "$OUTPUT" > actionlint.log
+          # Emit warning only, passed with zero status code
+          echo "::warning::Actionlint found issues. Check the logs for details."
+        fi
+
+    - name: Upload actionlint log
+      uses: actions/upload-artifact@v3
+      with:
+        name: actionlint.log
+        path: actionlint.log
+        retention-days: 5
